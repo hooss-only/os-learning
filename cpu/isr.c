@@ -1,8 +1,10 @@
 #include "isr.h"
 #include "idt.h" 
 #include "../drivers/screen.h"
-#include "../kernel/util.h"
-#include "../drivers/ports.h"
+#include "ports.h"
+
+#include "timer.h"
+#include "../drivers/keyboard.h"
 
 isr_t interrupt_handlers[256];
 /* Can't do this with a loop because we need the address
@@ -72,6 +74,16 @@ void isr_install() {
   set_idt_gate(47, (u32)irq15);
 
   set_idt(); // Load with ASM
+  kprint("ISRs Installed.\n");
+}
+
+void iqr_install() {
+  asm volatile("sti");
+
+  init_timer(50);
+
+  init_keyboard();
+
 }
 
 /* To print the message which defines every exception */
